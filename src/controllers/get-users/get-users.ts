@@ -1,8 +1,11 @@
 import { iGetUsersController, iGetUsersRepository } from "./protocols";
+import { HttpResponse } from "../protocols";
+import { user } from "../../models/user";
 
-export class getUsersController implements iGetUsersController {
+export class GetUsersController implements iGetUsersController {
   constructor(private readonly getUsersRepository: iGetUsersRepository) {}
-  async handle() {
+
+  async handle(): Promise<HttpResponse<user[]>> {
     try {
       const users = await this.getUsersRepository.getUsers();
 
@@ -11,18 +14,10 @@ export class getUsersController implements iGetUsersController {
         body: users,
       };
     } catch (err) {
-      if (err instanceof Error) {
-        console.log(err.message);
-        return {
-          statusCode: 500,
-          body: JSON.stringify({ error: err.message }),
-        };
-      } else {
-        return {
-          statusCode: 500,
-          body: JSON.stringify({ error: "Error at getting users" }),
-        };
-      }
+      return {
+        statusCode: 500,
+        body: JSON.stringify(err),
+      };
     }
   }
 }
