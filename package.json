@@ -11,6 +11,8 @@
   "type": "commonjs",
   "devDependencies": {
     "@eslint/js": "^9.23.0",
+    "@types/express": "^5.0.1",
+    "dotenv": "^16.4.7",
     "eslint": "^9.23.0",
     "eslint-config-prettier": "^10.1.1",
     "globals": "^16.0.0",
@@ -20,5 +22,7 @@
     "typescript": "^5.8.2",
     "typescript-eslint": "^8.28.0"
   },
-  "dependencies": {}
+  "dependencies": {
+    "express": "^4.21.2"
+  }
 }
