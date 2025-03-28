@@ -2,7 +2,7 @@ import { iGetUsersController, iGetUsersRepository } from "./protocols";
 import { HttpResponse } from "../protocols";
 import { user } from "../../models/user";
 
-export class GetUsersController implements iGetUsersController {
+export class getUsersController implements iGetUsersController {
   constructor(private readonly getUsersRepository: iGetUsersRepository) {}
 
   async handle(): Promise<HttpResponse<user[]>> {
