@@ -7,7 +7,7 @@ const app = express();
 
 config();
 app.use(express.json());
-app.get("/", async (req, res) => {
+app.get("/users", async (req, res) => {
   const MongoGetusersRepository = new mongoGetusersRepository;
   const GetUsersController = new getUsersController(MongoGetusersRepository);
 
