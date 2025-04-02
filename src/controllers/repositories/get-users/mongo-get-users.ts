@@ -1,14 +1,19 @@
+import { mongoClient } from "../../../database/mongo";
 import { user } from "../../../models/user";
 import { iGetUsersRepository } from "../../get-users/protocols";
 
 export class mongoGetusersRepository implements iGetUsersRepository {
-  getUsers(): Promise<user[]> {
-    return Promise.resolve([
-      {
-        name: "John Doe",
-        email: "john.doe@example.com",
-        password: "password123",
-      },
-    ]);
+  async getUsers(): Promise<user[]> {
+    const users = await mongoClient.db
+      .collection<Omit<user, "id">>("users")
+      .find({})
+      .toArray() || [];
+
+    return users.map((user) => {
+      return {
+        ...user,
+        id: user._id.toHexString(),
+      };
+    });
   }
 }

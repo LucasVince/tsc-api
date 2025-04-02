@@ -1,8 +1,8 @@
 import { Db, MongoClient } from "mongodb";
 
 export const mongoClient = {
-  client: undefined as MongoClient | undefined,
-  db: undefined as Db | undefined,
+  client: undefined as unknown as MongoClient,
+  db: undefined as unknown as Db,
 
   async connect(): Promise<void> {
     const url = process.env.MONGO_URL || "localhost:27017";
