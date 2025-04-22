@@ -1,9 +1,9 @@
 import express from "express";
 import dotenv from "dotenv";
 import { getUsersController } from "./controllers/get-users/get-users";
-import { mongoGetusersRepository } from "./controllers/repositories/get-users/mongo-get-users";
+import { mongoGetusersRepository } from "./repositories/get-users/mongo-get-users";
 import { mongoClient } from "./database/mongo";
-import { mongoPostUserRepository } from "./controllers/repositories/post-users/mongo-post-users";
+import { mongoPostUserRepository } from "./repositories/post-users/mongo-post-users";
 import { postUserController } from "./controllers/post-users/post-users";
 
 const main = async () => {
@@ -23,10 +23,12 @@ const main = async () => {
 
     res.status(response.statusCode).send(response.body);
   });
-  
+
   app.post("/users", async (req, res) => {
     const MongoCreateUserRepository = new mongoPostUserRepository();
-    const PostUserController = new postUserController(MongoCreateUserRepository);
+    const PostUserController = new postUserController(
+      MongoCreateUserRepository
+    );
     const httpRequest = {
       body: req.body,
       headers: req.headers,

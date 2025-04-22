@@ -1,9 +1,9 @@
-import { mongoClient } from "../../../database/mongo";
-import { user } from "../../../models/user";
+import { mongoClient } from "../../database/mongo";
+import { user } from "../../models/user";
 import {
   iPostUsersParams,
   iPostUsersRepository,
-} from "../../post-users/protocols";
+} from "../../controllers/post-users/protocols";
 
 export class mongoPostUserRepository implements iPostUsersRepository {
   async postUser(params: iPostUsersParams): Promise<user> {
