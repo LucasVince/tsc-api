@@ -1,10 +1,12 @@
 import express from "express";
 import dotenv from "dotenv";
-import { getUsersController } from "./controllers/get-users/get-users";
-import { mongoGetusersRepository } from "./repositories/get-users/mongo-get-users";
+
+import { getUsersFactory } from "./factories/get-users";
+import { postUserFactory } from "./factories/post-user";
+
 import { mongoClient } from "./database/mongo";
-import { mongoPostUserRepository } from "./repositories/post-users/mongo-post-users";
-import { postUserController } from "./controllers/post-users/post-users";
+import { mongoUpdateUserRepository } from "./repositories/update-users/mongo-update-users";
+import { updateUserController } from "./controllers/update-user/update-user";
 
 const main = async () => {
   dotenv.config();
@@ -16,8 +18,7 @@ const main = async () => {
   app.use(express.json());
 
   app.get("/users", async (req, res) => {
-    const MongoGetusersRepository = new mongoGetusersRepository();
-    const GetUsersController = new getUsersController(MongoGetusersRepository);
+    const GetUsersController = getUsersFactory();
 
     const response = await GetUsersController.handle();
 
@@ -25,10 +26,8 @@ const main = async () => {
   });
 
   app.post("/users", async (req, res) => {
-    const MongoCreateUserRepository = new mongoPostUserRepository();
-    const PostUserController = new postUserController(
-      MongoCreateUserRepository
-    );
+    const PostUserController = postUserFactory();
+
     const httpRequest = {
       body: req.body,
       headers: req.headers,
@@ -38,6 +37,25 @@ const main = async () => {
     };
 
     const response = await PostUserController.handle(httpRequest);
+
+    res.status(response.statusCode).send(response.body);
+  });
+
+  app.patch("/users/:id", async (req, res) => {
+    const MongoCreateUserRepository = new mongoUpdateUserRepository();
+    const UpdateUserController = new updateUserController(
+      MongoCreateUserRepository
+    );
+
+    const httpRequest = {
+      body: req.body,
+      headers: req.headers,
+      params: req.params,
+      query: req.query,
+      method: req.method as "PATCH",
+    };
+
+    const response = await UpdateUserController.handle(httpRequest);
 
     res.status(response.statusCode).send(response.body);
   });

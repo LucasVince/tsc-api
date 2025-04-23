@@ -1,4 +1,5 @@
 import { ObjectId } from "mongodb";
+import { hash } from "bcrypt";
 import {
   iUpdateUserParams,
   iUpdateUserRepository,
@@ -6,21 +7,35 @@ import {
 import { mongoClient } from "../../database/mongo";
 import { user } from "../../models/user";
 
-export class MongoUpdateUserRepository implements iUpdateUserRepository {
+export class mongoUpdateUserRepository implements iUpdateUserRepository {
   async updateUser(id: string, params: iUpdateUserParams): Promise<user> {
+    const userToUpdate = await mongoClient.db
+      .collection("users")
+      .findOne({ _id: new ObjectId(id) });
+
+    if (params.password) {
+      const hashedPassword = await hash(params.password, 10);
+      params.password = hashedPassword;
+    }
+
     await mongoClient.db.collection("users").updateOne(
       { _id: new ObjectId(id) },
       {
         $set: {
-          ...params,
+          params: {
+            ...userToUpdate!.params,
+            ...params,
+          },
         },
       }
     );
 
-    const user = await mongoClient.db.collection("users").findOne({_id: new ObjectId(id) });
+    const user = await mongoClient.db
+      .collection("users")
+      .findOne({ _id: new ObjectId(id) });
 
     if (!user) {
-      throw new Error("User not found");
+      throw new Error("User not created");
     }
 
     const { _id, ...rest } = user;
