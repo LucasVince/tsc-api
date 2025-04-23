@@ -3,10 +3,9 @@ import dotenv from "dotenv";
 
 import { getUsersFactory } from "./factories/get-users";
 import { postUserFactory } from "./factories/post-user";
+import { updateUserFactory } from "./factories/update-user";
 
 import { mongoClient } from "./database/mongo";
-import { mongoUpdateUserRepository } from "./repositories/update-users/mongo-update-users";
-import { updateUserController } from "./controllers/update-user/update-user";
 
 const main = async () => {
   dotenv.config();
@@ -42,10 +41,7 @@ const main = async () => {
   });
 
   app.patch("/users/:id", async (req, res) => {
-    const MongoCreateUserRepository = new mongoUpdateUserRepository();
-    const UpdateUserController = new updateUserController(
-      MongoCreateUserRepository
-    );
+    const UpdateUserController = updateUserFactory();
 
     const httpRequest = {
       body: req.body,
