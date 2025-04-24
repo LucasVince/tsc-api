@@ -1,4 +1,4 @@
-import { mongoUpdateUserRepository } from "../repositories/update-users/mongo-update-users";
+import { mongoUpdateUserRepository } from "../repositories/update-user/mongo-update-users";
 import { updateUserController } from "../controllers/update-user/update-user";
 
 export const updateUserFactory = () => {

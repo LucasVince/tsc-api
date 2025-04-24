@@ -31,7 +31,7 @@ export class updateUserController implements iUpdateUserController {
       if (someFieldIsNotAllowed) {
         return {
           statusCode: 400,
-          body: "Some fields are not allowed",
+          body: "Some fields are not allowed, or does not exist",
         };
       }
 
