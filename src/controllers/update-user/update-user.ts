@@ -1,12 +1,9 @@
 import { user } from "../../models/user";
-import { HttpRequest, HttpResponse } from "../protocols";
-import {
-  iUpdateUserController,
-  iUpdateUserParams,
-  iUpdateUserRepository,
-} from "./protocols";
+import { badRequest, created, serverError } from "../helpers";
+import { HttpRequest, HttpResponse, iController } from "../protocols";
+import { iUpdateUserParams, iUpdateUserRepository } from "./protocols";
 
-export class updateUserController implements iUpdateUserController {
+export class updateUserController implements iController {
   constructor(private readonly updateUserRepository: iUpdateUserRepository) {}
   async handle(
     httpRequest: HttpRequest<unknown, { id: string }>
@@ -15,10 +12,7 @@ export class updateUserController implements iUpdateUserController {
       const id = httpRequest?.params?.id;
 
       if (!id) {
-        return {
-          statusCode: 400,
-          body: "Missing param: id",
-        };
+        return badRequest("Missing param: id");
       }
 
       const someFieldIsNotAllowed = Object.keys(httpRequest.body!).some(
@@ -29,10 +23,7 @@ export class updateUserController implements iUpdateUserController {
       );
 
       if (someFieldIsNotAllowed) {
-        return {
-          statusCode: 400,
-          body: "Some fields are not allowed, or does not exist",
-        };
+        return badRequest("Some field is not allowed, or does not exist");
       }
 
       const user = await this.updateUserRepository.updateUser(
@@ -40,15 +31,9 @@ export class updateUserController implements iUpdateUserController {
         httpRequest.body!
       );
 
-      return {
-        statusCode: 200,
-        body: user,
-      };
+      return created(user);
     } catch (err) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify(err),
-      };
+      return serverError(err as string);
     }
   }
 }

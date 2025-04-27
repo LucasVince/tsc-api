@@ -1,15 +1,11 @@
 import { user } from "../../models/user";
-import { HttpRequest, HttpResponse } from "../protocols";
-import {
-  iPostUsersController,
-  iPostUsersParams,
-  iPostUsersRepository,
-} from "./protocols";
-
-import { isEmail } from 'validator';
+import { HttpRequest, HttpResponse, iController } from "../protocols";
+import { iPostUsersParams, iPostUsersRepository } from "./protocols";
+import { isEmail } from "validator";
 import { hash } from "bcrypt";
+import { badRequest, created } from "../helpers";
 
-export class postUserController implements iPostUsersController {
+export class postUserController implements iController {
   constructor(private readonly postUsersRepository: iPostUsersRepository) {}
 
   async handle(
@@ -20,41 +16,29 @@ export class postUserController implements iPostUsersController {
 
       for (const field of requiredFields) {
         if (!httpRequest?.body?.[field as keyof iPostUsersParams]) {
-          return {
-            statusCode: 400,
-            body: `Missing param: ${field}`,
-          };
+          return badRequest(`Missing param: ${field}`);
         }
       }
 
       const isEmailValid = isEmail(httpRequest.body!.email);
 
       if (!isEmailValid) {
-        return {
-          statusCode: 400,
-          body: `${httpRequest.body!.email} is not a valid email`,
-        };
+        return badRequest(`${httpRequest.body!.email} is not a valid email`);
       }
 
       const hashedPassword = await hash(httpRequest.body!.password, 10);
 
-      const userToCreate:iPostUsersParams = {
+      const userToCreate: iPostUsersParams = {
         name: httpRequest.body!.name,
         email: httpRequest.body!.email,
         password: hashedPassword,
-      }
+      };
 
       const user = await this.postUsersRepository.postUser(userToCreate);
 
-      return {
-        statusCode: 201,
-        body: user,
-      };
+      return created(user);
     } catch (err) {
-      return {
-        statusCode: 500,
-        body: JSON.stringify(err),
-      };
+      return badRequest(err as string);
     }
   }
 }
