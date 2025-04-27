@@ -3,7 +3,9 @@
   "version": "1.0.0",
   "description": "",
   "scripts": {
-    "start:dev": "nodemon ./src/index.ts"
+    "start:dev": "nodemon ./src/index.ts",
+    "build": "tsc",
+    "start": "node ./dist/index.js"
   },
   "keywords": [],
   "author": "",
